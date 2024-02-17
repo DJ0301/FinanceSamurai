@@ -8,6 +8,23 @@ const PORT = 3010;
 app.use(express.json()); // Middleware to parse JSON requests
 app.use(cors()); // Enable CORS for all routes
 
+async function fetchnews(symbol) {
+  const url = "https://fin-api-9thj.onrender.com/get_article";
+
+  const requestBody = {
+    symbol: symbol
+  };
+
+  try {
+    const response = await axios.post(url, requestBody);
+    const data = response.data;
+    console.log(data);
+    return data;
+  } catch (error) {
+    console.error('Error fetching news: ', error);
+  }
+}
+
 async function fetchStockData(symbol, interval, range) {
   const url = "https://apidojo-yahoo-finance-v1.p.rapidapi.com/stock/v3/get-chart";
 
@@ -72,8 +89,19 @@ app.post('/api/stockdata', async (req, res) => {
   }
 });
 
+app.post('/api/news', async (req, res) => {
+  const symbol = req.body.symbol;
+  try {
+    const response = await fetchnews(symbol);
+    res.json(response); // Send the fetched data as JSON response
+    console.log(response);
+  } catch (error) {
+    console.error('Error fetching stock data: ', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });
 
-fetchStockData('AAPL', '1d', '1mo');

@@ -134,7 +134,7 @@ function Community() {
         }
       />
     </Box>
-    <h1 style={{fontSize: 50, marginTop: 20, color: '#494949'}}>Relevant News</h1>
+    <h1 style={{fontSize: 50, marginTop: 20, color: '#494949'}}>Trading Ideas</h1>
     <Box sx={{ width: '80%', padding: '5%', margin: 'auto' }}>
     <Paper
         square
