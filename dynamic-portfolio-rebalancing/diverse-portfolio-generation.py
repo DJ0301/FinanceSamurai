@@ -23,54 +23,15 @@ from vectorbt.portfolio.enums import SizeType, Direction
 warnings.filterwarnings("ignore")
 pd.options.display.float_format = '{:.4f}'.format
 
+async def api_call(total_investment_amount, asset_allocation = {"stock":0.6,"crypto":0.1,"mf":0.3}, diversity_order = {"stock":10,"crypto":2,"mf":3}):
+    crypto_symbols = ['BTC-USD', 'ETH-USD', 'USDT-USD', 'BNB-USD', 'SOL-USD', 'DOGE-USD', 'STETH-USD', 'XRP-USD']
 
-crypto_symbols = ['BTC-USD', 'ETH-USD', 'USDT-USD', 'BNB-USD', 'SOL-USD', 'DOGE-USD', 'STETH-USD', 'XRP-USD']
+    stock_symbols = [ 'JCI', 'TGT', 'CMCSA', 'CPB', 'MO', 'APA', 'MMC', 'JPM', # test data
+            'ZION', 'PSA', 'BAX', 'BMY', 'LUV', 'PCAR', 'TXT', 'TMO',
+            'DE', 'MSFT', 'HPQ', 'SEE', 'VZ', 'CNP', 'NI', 'T', 'BA','AAPL'] 
 
-stock_symbols = [ 'JCI', 'TGT', 'CMCSA', 'CPB', 'MO', 'APA', 'MMC', 'JPM', # test data
-          'ZION', 'PSA', 'BAX', 'BMY', 'LUV', 'PCAR', 'TXT', 'TMO',
-          'DE', 'MSFT', 'HPQ', 'SEE', 'VZ', 'CNP', 'NI', 'T', 'BA','AAPL'] 
-
-mutual_funds_symbols = ['ENPIX', 'ENPSX', 'BIPSX', 'WWNPX', 'KNPCX', 'CSVIX', 'CYPSX', 'ACWIX', 'TIQIX', 'TROCX']
-
-# sector_mapper = {
-#     'JCI': 'Automotive',
-#     'TGT': 'Retail',
-#     'CMCSA': 'Media',
-#     'CPB': 'Food and Beverage',
-#     'MO': 'Tobacco',
-#     'APA': 'Energy',
-#     'MMC': 'Insurance',
-#     'JPM': 'Finance',
-#     'ZION': 'Finance',
-#     'PSA': 'Real Estate',
-#     'BAX': 'Healthcare',
-#     'BMY': 'Healthcare',
-#     'LUV': 'Aviation',
-#     'PCAR': 'Automotive',
-#     'TXT': 'Aerospace',
-#     'TMO': 'Healthcare',
-#     'DE': 'Machinery',
-#     'MSFT': 'Technology',
-#     'HPQ': 'Technology',
-#     'SEE': 'Chemicals',
-#     'VZ': 'Telecommunications',
-#     'CNP': 'Utilities',
-#     'NI': 'Utilities',
-#     'T': 'Telecommunications',
-#     'BA': 'Aerospace',
-#     'AAPL': 'Technology'
-# }
-
-# sector_lower = {"Technology": 0.4,
-#                 "Telecommunications" : 0.2
-#                 }  # at least 
-
-# sector_upper = {
-#     "Technology": 0.6,  
-#     "Aerospace": 0.1  # less than 10% oil and gas
-# }
-
-def api_call(total_investment_amount, asset_allocation = {"stock":0.6,"crypto":0.1,"mf":0.3}, diversity_order = {"stock":10,"crypto":2,"mf":3}):
+    mutual_funds_symbols = ['ENPIX', 'ENPSX', 'BIPSX', 'WWNPX', 'KNPCX', 'CSVIX', 'CYPSX', 'ACWIX', 'TIQIX', 'TROCX']
+    
     investment_stocks = total_investment_amount * asset_allocation["stock"]
     investment_crypto = total_investment_amount * asset_allocation["crpyto"]
     investment_mf = total_investment_amount * asset_allocation["mf"]
@@ -304,3 +265,5 @@ def max_efficient_risk(symbols, avg_returns, cov_mat, feature, investment_amount
     }
         
     return allocation, value_counts, stats_dict, portfolio_performance_dict
+
+api_call(total_investment_amount=20000)
