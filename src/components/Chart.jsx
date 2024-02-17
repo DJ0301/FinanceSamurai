@@ -8,6 +8,14 @@ const ApexChart = () => {
   const [interval, setInterval] = useState('1d');
   const [range, setRange] = useState('1mo');
 
+  const stocks = [
+    'AAPL', 'GOOG', 'MSFT', 'AMZN', 'TSLA', 'FB', 'V', 'JPM', 'PYPL', 'INTC',
+    'BAJFINANCE.BO', 'RELIANCE.BO', 'HDFCBANK.BO', 'INFY.BO', 'TCS.BO', 'WIPRO.BO', 'CIPLA.BO', 'ICICIBANK.BO', 'ONGC.BO', 'COALINDIA.BO',
+    'ICICIPRULI.NS', 'SUNPHARMA.NS', 'TATAMOTORS.NS', 'HINDUNILVR.NS', 'KOTAKBANK.NS', 'HDFCLIFE.NS', 'HCLTECH.NS', 'AXISBANK.NS', 'TITAN.NS', 'ITC.NS',
+    'BAJAJFINSV.BO', 'HDFC.BO', 'LT.BO', 'MARUTI.BO', 'NESTLEIND.BO', 'TATASTEEL.BO', 'GAIL.BO', 'SBIN.BO', 'CIPLA.BO', 'TITAN.BO', 'HCLTECH.BO',
+    'BAJAJFINSV.NS', 'HDFC.NS', 'LT.NS', 'MARUTI.NS', 'NESTLEIND.NS', 'TATASTEEL.NS', 'GAIL.NS', 'SBIN.NS', 'CIPLA.NS', 'TITAN.NS', 'HCLTECH.NS'
+  ];
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -53,17 +61,12 @@ const ApexChart = () => {
 
   return (
     <div>
-      <div id="chart">
-        <ReactApexChart options={options} series={series} type="candlestick" height={350} />
-      </div>
-      <div id="html-dist"></div>
       <div>
         <label htmlFor="symbol">Symbol:</label>
         <select id="symbol" value={symbol} onChange={(e) => setSymbol(e.target.value)}>
-          <option value="AAPL">AAPL</option>
-          <option value="GOOG">GOOG</option>
-          <option value="MSFT">MSFT</option>
-          {/* Add more options as needed */}
+          {stocks.map((stock, index) => (
+            <option key={index} value={stock}>{stock}</option>
+          ))}
         </select>
       </div>
       <div>
@@ -72,7 +75,6 @@ const ApexChart = () => {
           <option value="1d">1d</option>
           <option value="1wk">1wk</option>
           <option value="1mo">1mo</option>
-          {/* Add more options as needed */}
         </select>
       </div>
       <div>
@@ -81,9 +83,12 @@ const ApexChart = () => {
           <option value="1mo">1mo</option>
           <option value="3mo">3mo</option>
           <option value="6mo">6mo</option>
-          {/* Add more options as needed */}
         </select>
       </div>
+      <div id="chart">
+        <ReactApexChart options={options} series={series} type="candlestick" height={350} />
+      </div>
+      <div id="html-dist"></div>
     </div>
   );
 };
