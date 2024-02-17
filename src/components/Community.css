@@ -21,10 +21,34 @@
     height: 250px;
 }
 
+
 body {
-    background-image: linear-gradient(
+    background: #faf6e9; 
+    /* background-image: linear-gradient(
         to right,
         rgba(112, 157, 255, 0.8),
         hsla(242, 74%, 61%, 0.8)   
     )!important;
+    background: linear-gradient(to right, rgb(233, 213, 255), rgb(192, 132, 252), rgb(107, 33, 168)); */
+    /* background: linear-gradient(to right, rgb(15, 23, 42), rgb(88, 28, 135), rgb(15, 23, 42)); */
+    
+
+    
+}
+
+
+.first-color { 
+	background: #faf6e9; 
+}
+	
+.second-color { 
+	background: #ece8d9; 
+}
+
+.third-color { 
+	background: #fffdf6; 
+}
+
+.fourth-color { 
+	background: #494949; 
 }

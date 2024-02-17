@@ -60,7 +60,8 @@ function Community() {
 
   return (
     <div>
-    <h1>Educational Content</h1>
+    <h1 style={{fontSize: 100, marginTop: 90, fontWeight: 'bold', color: '#494949'}}>The power of community</h1>
+    <h1 style={{fontSize: 50, marginTop: 80, color: '#494949'}}>Educational Content</h1>
     <Box sx={{ width: '80%', padding: '5%', margin: 'auto' }}>
       <Paper
         square
@@ -68,12 +69,15 @@ function Community() {
         sx={{
           display: 'flex',
           alignItems: 'center',
-          height: 50,
+          height: 80,
+          borderTopLeftRadius: 10,
+          borderTopRightRadius: 10,
+          color: '#fff',
           pl: 2,
-          bgcolor: 'background.default',
+          bgcolor: '#0c0c0c',
         }}
       >
-        <Typography>{images[activeStep].content}</Typography>
+        <Typography style={{color: 'dodgerblue', fontSize: 25}}>{images[activeStep].content}</Typography>
       </Paper>
       <AutoPlaySwipeableViews
         axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
@@ -87,9 +91,9 @@ function Community() {
               <Box
                 component="img"
                 sx={{
-                  height: 255,
+                  height: 500,
+                  fontSize: 40,
                   display: 'block',
-                  maxWidth: 400,
                   overflow: 'hidden',
                   width: '100%',
                 }}
@@ -100,7 +104,7 @@ function Community() {
           </div>
         ))}
       </AutoPlaySwipeableViews>
-      <MobileStepper
+      <MobileStepper style={{backgroundColor: '#011222', borderBottomLeftRadius: 10, borderBottomRightRadius: 10}}
         steps={maxSteps}
         position="static"
         activeStep={activeStep}
@@ -130,7 +134,7 @@ function Community() {
         }
       />
     </Box>
-    <h1>Relevant News</h1>
+    <h1 style={{fontSize: 50, marginTop: 20, color: '#494949'}}>Relevant News</h1>
     <Box sx={{ width: '80%', padding: '5%', margin: 'auto' }}>
     <Paper
         square
@@ -138,12 +142,15 @@ function Community() {
         sx={{
           display: 'flex',
           alignItems: 'center',
-          height: 50,
+          color: '#fff',
+          height: 80,
+          borderTopLeftRadius: 10,
+          borderTopRightRadius: 10,
           pl: 2,
-          bgcolor: 'background.default',
+          bgcolor: '#0c0c0c',
         }}
       >
-        <Typography>{images[activeStep].content}</Typography>
+        <Typography style={{color: 'dodgerblue', fontSize: 25}}>{images[activeStep].content}</Typography>
       </Paper>
       <AutoPlaySwipeableViews
         axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
@@ -157,9 +164,8 @@ function Community() {
               <Box
                 component="img"
                 sx={{
-                  height: 255,
+                  height: 500,
                   display: 'block',
-                  maxWidth: 400,
                   overflow: 'hidden',
                   width: '100%',
                 }}
@@ -170,7 +176,7 @@ function Community() {
           </div>
         ))}
       </AutoPlaySwipeableViews>
-      <MobileStepper
+      <MobileStepper style={{backgroundColor: '#011222', borderBottomLeftRadius: 10, borderBottomRightRadius: 10}}
         steps={maxSteps}
         position="static"
         activeStep={activeStep}
