@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from schemas.api_class import (stock,article)
 from fastapi import FastAPI, Request, Form, status, Body, Response, BackgroundTasks
 from fastapi.responses import JSONResponse
-from newsfeed.get_articles import (get_art, get_stock)
+from newsfeed.get_articles import (get_art, get_stock, get_art_sentiment)
 
 app = FastAPI()
 
@@ -19,3 +19,7 @@ async def articles(body: article):
     output = await get_art(body.symbol)
     return output
 
+@app.post("/get_sentiment")
+async def articles(body: article):
+    output = await get_art_sentiment(body.symbol)
+    return output
