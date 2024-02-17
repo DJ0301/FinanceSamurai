@@ -8,3 +8,9 @@ class stock(BaseModel):
 
 class article(BaseModel):
     symbol: str
+
+
+class balancing(BaseModel):
+    asset_allocation = Dict
+    diversity_order = Dict
+    investment_amount = int
