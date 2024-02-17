@@ -8,6 +8,7 @@ import Profile from "./components/Profile";
 import ApexChart from "./components/Chart";
 import Community from "./components/Community";
 import BasicTable from "./components/Table";
+
 function App() {
   return (
     <div>
@@ -19,8 +20,10 @@ function App() {
       <Contact />
       <ImgMediaCard/> */}
       {/* <Community /> */}
-      {/* <ApexChart /> */}
-      <BasicTable />
+      <ApexChart />
+      {/* <BasicTable /> */}
+      {/* <StockFetcher /> */}
+      {/* <StockDataComponent /> */}
     </div>
   );
 }
