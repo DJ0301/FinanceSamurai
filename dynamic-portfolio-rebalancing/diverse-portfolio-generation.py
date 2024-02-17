@@ -23,55 +23,72 @@ from vectorbt.portfolio.enums import SizeType, Direction
 warnings.filterwarnings("ignore")
 pd.options.display.float_format = '{:.4f}'.format
 
-symbols = [ 'JCI', 'TGT', 'CMCSA', 'CPB', 'MO', 'APA', 'MMC', 'JPM', # test data
+
+crypto_symbols = ['BTC-USD', 'ETH-USD', 'USDT-USD', 'BNB-USD', 'SOL-USD', 'DOGE-USD', 'STETH-USD', 'XRP-USD']
+
+stock_symbols = [ 'JCI', 'TGT', 'CMCSA', 'CPB', 'MO', 'APA', 'MMC', 'JPM', # test data
           'ZION', 'PSA', 'BAX', 'BMY', 'LUV', 'PCAR', 'TXT', 'TMO',
           'DE', 'MSFT', 'HPQ', 'SEE', 'VZ', 'CNP', 'NI', 'T', 'BA','AAPL'] 
 
-sector_mapper = {
-    'JCI': 'Automotive',
-    'TGT': 'Retail',
-    'CMCSA': 'Media',
-    'CPB': 'Food and Beverage',
-    'MO': 'Tobacco',
-    'APA': 'Energy',
-    'MMC': 'Insurance',
-    'JPM': 'Finance',
-    'ZION': 'Finance',
-    'PSA': 'Real Estate',
-    'BAX': 'Healthcare',
-    'BMY': 'Healthcare',
-    'LUV': 'Aviation',
-    'PCAR': 'Automotive',
-    'TXT': 'Aerospace',
-    'TMO': 'Healthcare',
-    'DE': 'Machinery',
-    'MSFT': 'Technology',
-    'HPQ': 'Technology',
-    'SEE': 'Chemicals',
-    'VZ': 'Telecommunications',
-    'CNP': 'Utilities',
-    'NI': 'Utilities',
-    'T': 'Telecommunications',
-    'BA': 'Aerospace',
-    'AAPL': 'Technology'
-}
+mutual_funds_symbols = ['ENPIX', 'ENPSX', 'BIPSX', 'WWNPX', 'KNPCX', 'CSVIX', 'CYPSX', 'ACWIX', 'TIQIX', 'TROCX']
 
-sector_lower = {"Technology": 0.4,
-                "Telecommunications" : 0.2
-                }  # at least 
+# sector_mapper = {
+#     'JCI': 'Automotive',
+#     'TGT': 'Retail',
+#     'CMCSA': 'Media',
+#     'CPB': 'Food and Beverage',
+#     'MO': 'Tobacco',
+#     'APA': 'Energy',
+#     'MMC': 'Insurance',
+#     'JPM': 'Finance',
+#     'ZION': 'Finance',
+#     'PSA': 'Real Estate',
+#     'BAX': 'Healthcare',
+#     'BMY': 'Healthcare',
+#     'LUV': 'Aviation',
+#     'PCAR': 'Automotive',
+#     'TXT': 'Aerospace',
+#     'TMO': 'Healthcare',
+#     'DE': 'Machinery',
+#     'MSFT': 'Technology',
+#     'HPQ': 'Technology',
+#     'SEE': 'Chemicals',
+#     'VZ': 'Telecommunications',
+#     'CNP': 'Utilities',
+#     'NI': 'Utilities',
+#     'T': 'Telecommunications',
+#     'BA': 'Aerospace',
+#     'AAPL': 'Technology'
+# }
 
-sector_upper = {
-    "Technology": 0.6,  
-    "Aerospace": 0.1  # less than 10% oil and gas
-}
+# sector_lower = {"Technology": 0.4,
+#                 "Telecommunications" : 0.2
+#                 }  # at least 
 
-def get_diverse_portfolio(symbols, investment_amount, max_risk_threshold = 1.0, max_return_threshold = 0.2, diversity_order = 1, sector_mapper = sector_mapper, sector_upper = {}, sector_lower = {}):
+# sector_upper = {
+#     "Technology": 0.6,  
+#     "Aerospace": 0.1  # less than 10% oil and gas
+# }
+
+def api_call(total_investment_amount, asset_allocation = {"stock":0.6,"crypto":0.1,"mf":0.3}, diversity_order = {"stock":10,"crypto":2,"mf":3}):
+    investment_stocks = total_investment_amount * asset_allocation["stock"]
+    investment_crypto = total_investment_amount * asset_allocation["crpyto"]
+    investment_mf = total_investment_amount * asset_allocation["mf"]
+
+    stock_dict = get_diverse_portfolio(symbols=stock_symbols, investment_amount=investment_stocks, diversity_order=diversity_order["stock"])
+    crypto_dict = get_diverse_portfolio(symbols=crypto_symbols, investment_amount=investment_crypto, diversity_order=diversity_order["crypto"], year_freq='365')
+    mutual_funds_dict = get_diverse_portfolio(symbols=mutual_funds_symbols, investment_amount=investment_mf, diversity_order=diversity_order["mf"])
+
+    return stock_dict, crypto_dict, mutual_funds_dict
+
+
+def get_diverse_portfolio(symbols, investment_amount, max_risk_threshold = 1.0, max_return_threshold = 0.1, diversity_order = 1, year_freq = '252'):
     symbols.sort()
     start_date = '2010-01-01'
     end_date = '2023-01-01'
 
     vbt.settings.array_wrapper['freq'] = 'days'
-    vbt.settings.returns['year_freq'] = '252 days'
+    vbt.settings.returns['year_freq'] = year_freq
     vbt.settings.portfolio['seed'] = 42
     vbt.settings.portfolio.stats['incl_unrealized'] = True
 
@@ -91,20 +108,20 @@ def get_diverse_portfolio(symbols, investment_amount, max_risk_threshold = 1.0, 
     }
 
     for index,feature in enumerate(features):
-        avg_returns = expected_returns.mean_historical_return(feature)
-        cov_mat = risk_models.sample_cov(feature)
+        avg_returns = expected_returns.mean_historical_return(feature, frequency=int(year_freq))
+        cov_mat = risk_models.sample_cov(feature, frequency=int(year_freq))
 
-        allocation_sh, sector_counts_sh, return_stats_sh, port_performance_sh = max_sharpe_score(avg_returns, cov_mat, feature, investment_amount, diversity_order)
-        allocation_ret, sector_counts_ret, return_stats_ret, port_performance_ret = max_efficient_return(avg_returns, cov_mat, feature, investment_amount, diversity_order, max_return_threshold)
-        allocation_risk, sector_counts_risk, return_stats_risk, port_performance_risk = max_efficient_risk(avg_returns, cov_mat, feature, investment_amount, diversity_order, max_risk_threshold)
+        allocation_sh, value_counts_sh, return_stats_sh, port_performance_sh = max_sharpe_score(symbols, avg_returns, cov_mat, feature, investment_amount, diversity_order)
+        allocation_ret, value_counts_ret, return_stats_ret, port_performance_ret = max_efficient_return(symbols, avg_returns, cov_mat, feature, investment_amount, diversity_order, max_return_threshold)
+        allocation_risk, value_counts_risk, return_stats_risk, port_performance_risk = max_efficient_risk(symbols, avg_returns, cov_mat, feature, investment_amount, diversity_order, max_risk_threshold)
 
-        output_dict[feature_list[index]][1].append([allocation_sh, sector_counts_sh, return_stats_sh, port_performance_sh])
-        output_dict[feature_list[index]][2].append([allocation_ret, sector_counts_ret, return_stats_ret, port_performance_ret])
-        output_dict[feature_list[index]][3].append([allocation_risk, sector_counts_risk, return_stats_risk, port_performance_risk])
+        output_dict[feature_list[index]][1].extend([allocation_sh, value_counts_sh, return_stats_sh, port_performance_sh])
+        output_dict[feature_list[index]][2].extend([allocation_ret, value_counts_ret, return_stats_ret, port_performance_ret])
+        output_dict[feature_list[index]][3].extend([allocation_risk, value_counts_risk, return_stats_risk, port_performance_risk])
 
-    print(output_dict)
+    return output_dict
 
-def max_sharpe_score(avg_returns, cov_mat, feature, investment_amount, diversity_order):
+def max_sharpe_score(symbols, avg_returns, cov_mat, feature, investment_amount, diversity_order):
 
     gamma = 0.01
     curr_div_order = 0 
@@ -146,13 +163,7 @@ def max_sharpe_score(avg_returns, cov_mat, feature, investment_amount, diversity
             gamma = gamma + 0.5
             del ef
 
-    sector_counts = defaultdict(int)
-    for asset, count in allocation.items():
-        sector = sector_mapper.get(asset)
-        if sector:
-            sector_counts[sector] += count
-
-    sector_counts = dict(sector_counts)
+    value_counts = {"Count" : sum(allocation.values())}
 
     portfolio_performance_dict = {
         "Expected annual return [%]" : portfolio_performance[0],
@@ -160,9 +171,9 @@ def max_sharpe_score(avg_returns, cov_mat, feature, investment_amount, diversity
     }
 
     stats_dict = {
-    'Start': pyopt_pf.stats().loc['Start'],
-    'End': pyopt_pf.stats().loc['End'],
-    'Period': pyopt_pf.stats().loc['Period'],
+    'Start': '2014-09-17 00:00:00',
+    'End': '2022-12-31 00:00:00',
+    'Period': str(pyopt_pf.stats().loc['Period']),
     'Start Value': pyopt_pf.stats().loc['Start Value'],
     'End Value': pyopt_pf.stats().loc['End Value'],
     'Total Return [%]': pyopt_pf.stats().loc['Total Return [%]'],
@@ -170,9 +181,9 @@ def max_sharpe_score(avg_returns, cov_mat, feature, investment_amount, diversity
     'Sharpe Ratio': pyopt_pf.stats().loc['Sharpe Ratio'],
     }
         
-    return allocation, sector_counts, stats_dict, portfolio_performance_dict
+    return allocation, value_counts, stats_dict, portfolio_performance_dict
 
-def max_efficient_return(avg_returns, cov_mat, feature, investment_amount, diversity_order, max_return_threshold):
+def max_efficient_return(symbols, avg_returns, cov_mat, feature, investment_amount, diversity_order, max_return_threshold):
     gamma = 0.01
     curr_div_order = 0 
 
@@ -213,13 +224,7 @@ def max_efficient_return(avg_returns, cov_mat, feature, investment_amount, diver
             gamma = gamma + 0.5
             del ef
 
-    sector_counts = defaultdict(int)
-    for asset, count in allocation.items():
-        sector = sector_mapper.get(asset)
-        if sector:
-            sector_counts[sector] += count
-
-    sector_counts = dict(sector_counts)
+    value_counts = {"Count" : sum(allocation.values())}
 
     portfolio_performance_dict = {
         "Expected annual return [%]" : portfolio_performance[0],
@@ -227,9 +232,9 @@ def max_efficient_return(avg_returns, cov_mat, feature, investment_amount, diver
     }
 
     stats_dict = {
-    'Start': pyopt_pf.stats().loc['Start'],
-    'End': pyopt_pf.stats().loc['End'],
-    'Period': pyopt_pf.stats().loc['Period'],
+    'Start': '2014-09-17 00:00:00',
+    'End': '2022-12-31 00:00:00',
+    'Period': str(pyopt_pf.stats().loc['Period']),
     'Start Value': pyopt_pf.stats().loc['Start Value'],
     'End Value': pyopt_pf.stats().loc['End Value'],
     'Total Return [%]': pyopt_pf.stats().loc['Total Return [%]'],
@@ -237,9 +242,9 @@ def max_efficient_return(avg_returns, cov_mat, feature, investment_amount, diver
     'Sharpe Ratio': pyopt_pf.stats().loc['Sharpe Ratio'],
     }
         
-    return allocation, sector_counts, stats_dict, portfolio_performance_dict
+    return allocation, value_counts, stats_dict, portfolio_performance_dict
 
-def max_efficient_risk(avg_returns, cov_mat, feature, investment_amount, diversity_order, max_risk_threshold):
+def max_efficient_risk(symbols, avg_returns, cov_mat, feature, investment_amount, diversity_order, max_risk_threshold):
     gamma = 0.01
     curr_div_order = 0 
 
@@ -280,13 +285,7 @@ def max_efficient_risk(avg_returns, cov_mat, feature, investment_amount, diversi
             gamma = gamma + 0.5
             del ef
 
-    sector_counts = defaultdict(int)
-    for asset, count in allocation.items():
-        sector = sector_mapper.get(asset)
-        if sector:
-            sector_counts[sector] += count
-
-    sector_counts = dict(sector_counts)
+    value_counts = {"Count" : sum(allocation.values())}
 
     portfolio_performance_dict = {
         "Expected annual return [%]" : portfolio_performance[0],
@@ -294,9 +293,9 @@ def max_efficient_risk(avg_returns, cov_mat, feature, investment_amount, diversi
     }
 
     stats_dict = {
-    'Start': pyopt_pf.stats().loc['Start'],
-    'End': pyopt_pf.stats().loc['End'],
-    'Period': pyopt_pf.stats().loc['Period'],
+    'Start': '2014-09-17 00:00:00',
+    'End': '2022-12-31 00:00:00',
+    'Period': str(pyopt_pf.stats().loc['Period']),
     'Start Value': pyopt_pf.stats().loc['Start Value'],
     'End Value': pyopt_pf.stats().loc['End Value'],
     'Total Return [%]': pyopt_pf.stats().loc['Total Return [%]'],
@@ -304,7 +303,4 @@ def max_efficient_risk(avg_returns, cov_mat, feature, investment_amount, diversi
     'Sharpe Ratio': pyopt_pf.stats().loc['Sharpe Ratio'],
     }
         
-    return allocation, sector_counts, stats_dict, portfolio_performance_dict
-
-# get_diverse_portfolio(symbols, investment_amount = 20000, max_risk_threshold = 1, max_return_threshold = 1, diversity_order = 8, sector_mapper = sector_mapper, sector_upper = sector_upper, sector_lower = sector_lower)
-get_diverse_portfolio(symbols, investment_amount = 20000)
+    return allocation, value_counts, stats_dict, portfolio_performance_dict
