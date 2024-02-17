@@ -6,8 +6,8 @@ import Skills from "./components/Skills";
 import Work from "./components/Work";
 import Profile from "./components/Profile";
 import ApexChart from "./components/Chart";
-import ImgMediaCard from "./components/Community";
 import Community from "./components/Community";
+import BasicTable from "./components/Table";
 function App() {
   return (
     <div>
@@ -18,7 +18,9 @@ function App() {
       <Profile/>
       <Contact />
       <ImgMediaCard/> */}
-      <Community />
+      {/* <Community /> */}
+      {/* <ApexChart /> */}
+      <BasicTable />
     </div>
   );
 }
