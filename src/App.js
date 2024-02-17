@@ -5,10 +5,9 @@ import Navbar from "./components/Navbar";
 import Skills from "./components/Skills";
 import Work from "./components/Work";
 import Profile from "./components/Profile";
-import ApexChart from "./components/Chart";
 import Community from "./components/Community";
 import BasicTable from "./components/Table";
-
+import { ApexChart } from "./components/Chart";
 function App() {
   return (
     <div>
@@ -24,6 +23,7 @@ function App() {
       {/* <BasicTable /> */}
       {/* <StockFetcher /> */}
       {/* <StockDataComponent /> */}
+      {/* <Community /> */}
     </div>
   );
 }
