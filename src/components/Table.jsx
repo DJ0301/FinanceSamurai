@@ -11,6 +11,9 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { PieChart } from '@mui/x-charts/PieChart';
+import StockDataComponent from './apidata';
+
+StockDataComponent('AAPL', '1d', '3mo');
 
 const calculateWeight = (assetValue, totalPortfolioValue) => {
   return (assetValue / totalPortfolioValue) * 100;
@@ -89,3 +92,6 @@ export default function BasicTable() {
     </div>
   );
 }
+
+
+
