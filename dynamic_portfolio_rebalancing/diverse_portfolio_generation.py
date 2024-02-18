@@ -6,8 +6,8 @@ import pytz
 import warnings
 from numba import njit
 from collections import defaultdict
-
-
+import asyncio
+import json
 from pypfopt.efficient_frontier import EfficientFrontier
 from pypfopt import risk_models
 from pypfopt import expected_returns, objective_functions
@@ -23,7 +23,19 @@ from vectorbt.portfolio.enums import SizeType, Direction
 warnings.filterwarnings("ignore")
 pd.options.display.float_format = '{:.4f}'.format
 
-def api_call(total_investment_amount, asset_allocation = {"stock":0.6,"crypto":0.1,"mf":0.3}, diversity_order = {"stock":10,"crypto":2,"mf":3}):
+def convert_to_native(data):
+    if isinstance(data, np.int64):
+        return int(data)
+    elif isinstance(data, dict):
+        return {k: convert_to_native(v) for k, v in data.items()}
+    elif isinstance(data, list):
+        return [convert_to_native(item) for item in data]
+    else:
+        return data
+
+
+
+async def api_call(total_investment_amount, asset_allocation = {"stock":0.6,"crypto":0.1,"mf":0.3}, diversity_order = {"stock":10,"crypto":2,"mf":3}):
     crypto_symbols = ['BTC-USD', 'ETH-USD', 'USDT-USD', 'BNB-USD', 'SOL-USD', 'DOGE-USD', 'STETH-USD', 'XRP-USD']
 
     stock_symbols = [ 'JCI', 'TGT', 'CMCSA', 'CPB', 'MO', 'APA', 'MMC', 'JPM', # test data
@@ -35,17 +47,28 @@ def api_call(total_investment_amount, asset_allocation = {"stock":0.6,"crypto":0
     investment_stocks = total_investment_amount * asset_allocation["stock"]
     investment_crypto = total_investment_amount * asset_allocation["crypto"]
     investment_mf = total_investment_amount * asset_allocation["mf"]
+    # tasks =  [
+    #     get_diverse_portfolio(symbols=stock_symbols, investment_amount=investment_stocks, diversity_order=diversity_order["stock"]),
+    #     get_diverse_portfolio(symbols=crypto_symbols, investment_amount=investment_crypto, diversity_order=diversity_order["crypto"], year_freq='365'),
+    #     get_diverse_portfolio(symbols=mutual_funds_symbols, investment_amount=investment_mf, diversity_order=diversity_order["mf"])
+    # ]
+    # stock_dict, crypto_dict, mutual_funds_dict = await asyncio.gather(*tasks)
+    stock_dict = await get_diverse_portfolio(symbols=stock_symbols, investment_amount=investment_stocks, diversity_order=diversity_order["stock"])
+    crypto_dict = await get_diverse_portfolio(symbols=crypto_symbols, investment_amount=investment_crypto, diversity_order=diversity_order["crypto"], year_freq='365')
+    mutual_funds_dict = await get_diverse_portfolio(symbols=mutual_funds_symbols, investment_amount=investment_mf, diversity_order=diversity_order["mf"])
+    my_dict = {"stocks": stock_dict,"crypto": crypto_dict, "mutual": mutual_funds_dict}
+    # Read the dictionary from the file
+    val = {k: v.item() if isinstance(v, np.int64) else v for k, v in my_dict.items()}
+    # json.dump(val, json_file)
+    converted_data = convert_to_native(val)
+    json_data = json.dumps(converted_data)
 
-    stock_dict = get_diverse_portfolio(symbols=stock_symbols, investment_amount=investment_stocks, diversity_order=diversity_order["stock"])
-    crypto_dict = get_diverse_portfolio(symbols=crypto_symbols, investment_amount=investment_crypto, diversity_order=diversity_order["crypto"], year_freq='365')
-    mutual_funds_dict = get_diverse_portfolio(symbols=mutual_funds_symbols, investment_amount=investment_mf, diversity_order=diversity_order["mf"])
-
-    return stock_dict, crypto_dict, mutual_funds_dict
+    return json_data
 
 
-def get_diverse_portfolio(symbols, investment_amount, max_risk_threshold = 1.0, max_return_threshold = 0.1, diversity_order = 1, year_freq = '252'):
+async def get_diverse_portfolio(symbols, investment_amount, max_risk_threshold = 1.0, max_return_threshold = 0.1, diversity_order = 1, year_freq = '252'):
     symbols.sort()
-    start_date = '2010-01-01'
+    start_date = '2020-01-01'
     end_date = '2023-01-01'
 
     vbt.settings.array_wrapper['freq'] = 'days'
@@ -72,17 +95,16 @@ def get_diverse_portfolio(symbols, investment_amount, max_risk_threshold = 1.0, 
         avg_returns = expected_returns.mean_historical_return(feature, frequency=int(year_freq))
         cov_mat = risk_models.sample_cov(feature, frequency=int(year_freq))
 
-        allocation_sh, value_counts_sh, return_stats_sh, port_performance_sh =  max_sharpe_score(symbols, avg_returns, cov_mat, feature, investment_amount, diversity_order)
-        allocation_ret, value_counts_ret, return_stats_ret, port_performance_ret =  max_efficient_return(symbols, avg_returns, cov_mat, feature, investment_amount, diversity_order, max_return_threshold)
-        allocation_risk, value_counts_risk, return_stats_risk, port_performance_risk =  max_efficient_risk(symbols, avg_returns, cov_mat, feature, investment_amount, diversity_order, max_risk_threshold)
+        allocation_sh, value_counts_sh, return_stats_sh, port_performance_sh =  await max_sharpe_score(symbols, avg_returns, cov_mat, feature, investment_amount, diversity_order)
+        allocation_ret, value_counts_ret, return_stats_ret, port_performance_ret =  await max_efficient_return(symbols, avg_returns, cov_mat, feature, investment_amount, diversity_order, max_return_threshold)
+        allocation_risk, value_counts_risk, return_stats_risk, port_performance_risk =  await max_efficient_risk(symbols, avg_returns, cov_mat, feature, investment_amount, diversity_order, max_risk_threshold)
 
         output_dict[feature_list[index]][1].extend([allocation_sh, value_counts_sh, return_stats_sh, port_performance_sh])
         output_dict[feature_list[index]][2].extend([allocation_ret, value_counts_ret, return_stats_ret, port_performance_ret])
         output_dict[feature_list[index]][3].extend([allocation_risk, value_counts_risk, return_stats_risk, port_performance_risk])
-
     return output_dict
 
-def max_sharpe_score(symbols, avg_returns, cov_mat, feature, investment_amount, diversity_order):
+async def max_sharpe_score(symbols, avg_returns, cov_mat, feature, investment_amount, diversity_order):
 
     gamma = 0.01
     curr_div_order = 0 
@@ -106,7 +128,7 @@ def max_sharpe_score(symbols, avg_returns, cov_mat, feature, investment_amount, 
 
         allocation, leftover = da.lp_portfolio()
 
-        pyopt_size = np.full_like(feature, np.nan)
+        pyopt_size = np.zeros_like(feature)
         pyopt_size[0, :] = pyopt_weights  # allocate at first timestamp, do nothing afterwards
 
         # Run simulation with weights from PyPortfolioOpt
@@ -141,10 +163,10 @@ def max_sharpe_score(symbols, avg_returns, cov_mat, feature, investment_amount, 
     'Benchmark Return [%]': pyopt_pf.stats().loc['Benchmark Return [%]'],
     'Sharpe Ratio': pyopt_pf.stats().loc['Sharpe Ratio'],
     }
-        
+
     return allocation, value_counts, stats_dict, portfolio_performance_dict
 
-def max_efficient_return(symbols, avg_returns, cov_mat, feature, investment_amount, diversity_order, max_return_threshold):
+async def max_efficient_return(symbols, avg_returns, cov_mat, feature, investment_amount, diversity_order, max_return_threshold):
     gamma = 0.01
     curr_div_order = 0 
 
@@ -167,7 +189,7 @@ def max_efficient_return(symbols, avg_returns, cov_mat, feature, investment_amou
 
         allocation, leftover = da.lp_portfolio()
 
-        pyopt_size = np.full_like(feature, np.nan)
+        pyopt_size = np.zeros_like(feature)
         pyopt_size[0, :] = pyopt_weights  # allocate at first timestamp, do nothing afterwards
 
         # Run simulation with weights from PyPortfolioOpt
@@ -202,10 +224,10 @@ def max_efficient_return(symbols, avg_returns, cov_mat, feature, investment_amou
     'Benchmark Return [%]': pyopt_pf.stats().loc['Benchmark Return [%]'],
     'Sharpe Ratio': pyopt_pf.stats().loc['Sharpe Ratio'],
     }
-        
+
     return allocation, value_counts, stats_dict, portfolio_performance_dict
 
-def max_efficient_risk(symbols, avg_returns, cov_mat, feature, investment_amount, diversity_order, max_risk_threshold):
+async def max_efficient_risk(symbols, avg_returns, cov_mat, feature, investment_amount, diversity_order, max_risk_threshold):
     gamma = 0.01
     curr_div_order = 0 
 
@@ -228,7 +250,7 @@ def max_efficient_risk(symbols, avg_returns, cov_mat, feature, investment_amount
 
         allocation, leftover = da.lp_portfolio()
 
-        pyopt_size = np.full_like(feature, np.nan)
+        pyopt_size = np.zeros_like(feature)
         pyopt_size[0, :] = pyopt_weights  # allocate at first timestamp, do nothing afterwards
 
         # Run simulation with weights from PyPortfolioOpt
@@ -263,6 +285,6 @@ def max_efficient_risk(symbols, avg_returns, cov_mat, feature, investment_amount
     'Benchmark Return [%]': pyopt_pf.stats().loc['Benchmark Return [%]'],
     'Sharpe Ratio': pyopt_pf.stats().loc['Sharpe Ratio'],
     }
-        
+
     return allocation, value_counts, stats_dict, portfolio_performance_dict
 

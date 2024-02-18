@@ -28,5 +28,5 @@ async def articles(body: article):
 
 @app.post("/balancing")
 async def balancing(body: balancing):
-    output = get_balancing(total_investment_amount=body.amount)
+    output = await get_balancing(total_investment_amount=body.amount)
     return output
