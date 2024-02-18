@@ -3,14 +3,11 @@ import numpy as np
 import pandas as pd
 from datetime import datetime, timedelta
 import warnings
-<<<<<<< Updated upstream:dynamic_portfolio_rebalancing/diverse_portfolio_generation.py
 from numba import njit
 from collections import defaultdict
 import asyncio
 import json
-=======
 
->>>>>>> Stashed changes:dynamic-portfolio-rebalancing/diverse-portfolio-generation.py
 from pypfopt.efficient_frontier import EfficientFrontier
 from pypfopt import risk_models
 from pypfopt import expected_returns, objective_functions
@@ -22,7 +19,6 @@ import vectorbt as vbt
 warnings.filterwarnings("ignore")
 pd.options.display.float_format = '{:.4f}'.format
 
-<<<<<<< Updated upstream:dynamic_portfolio_rebalancing/diverse_portfolio_generation.py
 def convert_to_native(data):
     if isinstance(data, np.int64):
         return int(data)
@@ -33,7 +29,6 @@ def convert_to_native(data):
     else:
         return data
 
-=======
 crypto_symbols = ['BTC-USD', 'ETH-USD', 'USDT-USD', 'BNB-USD', 'SOL-USD', 'DOGE-USD', 'STETH-USD', 'XRP-USD']
 
 stock_symbols = [ 'JCI', 'TGT', 'CMCSA', 'CPB', 'MO', 'APA', 'MMC', 'JPM',
@@ -41,7 +36,6 @@ stock_symbols = [ 'JCI', 'TGT', 'CMCSA', 'CPB', 'MO', 'APA', 'MMC', 'JPM',
         'DE', 'MSFT', 'HPQ', 'SEE', 'VZ', 'CNP', 'NI', 'T', 'BA','AAPL'] 
 
 mutual_funds_symbols = ['ENPIX', 'ENPSX', 'BIPSX', 'WWNPX', 'KNPCX', 'CSVIX', 'CYPSX', 'ACWIX', 'TIQIX', 'TROCX']
->>>>>>> Stashed changes:dynamic-portfolio-rebalancing/diverse-portfolio-generation.py
 
 
 async def api_call(total_investment_amount, asset_allocation = {"stock":0.6,"crypto":0.1,"mf":0.3}, diversity_order = {"stock":10,"crypto":2,"mf":3}):
@@ -65,20 +59,14 @@ async def api_call(total_investment_amount, asset_allocation = {"stock":0.6,"cry
     converted_data = convert_to_native(val)
     json_data = json.dumps(converted_data)
 
-<<<<<<< Updated upstream:dynamic_portfolio_rebalancing/diverse_portfolio_generation.py
-    return json_data
-=======
     stock_dict = await get_diverse_portfolio(symbols=stock_symbols, investment_amount=investment_stocks, diversity_order=diversity_order["stock"])
     crypto_dict = await get_diverse_portfolio(symbols=crypto_symbols, investment_amount=investment_crypto, diversity_order=diversity_order["crypto"], year_freq='365')
     mutual_funds_dict = await get_diverse_portfolio(symbols=mutual_funds_symbols, investment_amount=investment_mf, diversity_order=diversity_order["mf"])
 
     print(stock_dict)
->>>>>>> Stashed changes:dynamic-portfolio-rebalancing/diverse-portfolio-generation.py
 
     my_dict = {"stocks": stock_dict,"crypto": crypto_dict, "mutual": mutual_funds_dict}
 
-<<<<<<< Updated upstream:dynamic_portfolio_rebalancing/diverse_portfolio_generation.py
-=======
     val = {k: v.item() if isinstance(v, np.int64) else v for k, v in my_dict.items()}
 
     converted_data = convert_to_native(val)
@@ -86,7 +74,6 @@ async def api_call(total_investment_amount, asset_allocation = {"stock":0.6,"cry
 
     return json_data
 
->>>>>>> Stashed changes:dynamic-portfolio-rebalancing/diverse-portfolio-generation.py
 async def get_diverse_portfolio(symbols, investment_amount, max_risk_threshold = 1.0, max_return_threshold = 0.1, diversity_order = 1, year_freq = '252'):
     symbols.sort()
     start_date = '2020-01-01'
@@ -115,15 +102,9 @@ async def get_diverse_portfolio(symbols, investment_amount, max_risk_threshold =
         avg_returns = expected_returns.mean_historical_return(feature, frequency=int(year_freq))
         cov_mat = risk_models.sample_cov(feature, frequency=int(year_freq))
 
-<<<<<<< Updated upstream:dynamic_portfolio_rebalancing/diverse_portfolio_generation.py
-        allocation_sh, value_counts_sh, return_stats_sh, port_performance_sh =  await max_sharpe_score(symbols, avg_returns, cov_mat, feature, investment_amount, diversity_order)
-        allocation_ret, value_counts_ret, return_stats_ret, port_performance_ret =  await max_efficient_return(symbols, avg_returns, cov_mat, feature, investment_amount, diversity_order, max_return_threshold)
-        allocation_risk, value_counts_risk, return_stats_risk, port_performance_risk =  await max_efficient_risk(symbols, avg_returns, cov_mat, feature, investment_amount, diversity_order, max_risk_threshold)
-=======
         allocation_sh, value_counts_sh, return_stats_sh, port_performance_sh = await max_sharpe_score(symbols, avg_returns, cov_mat, feature, investment_amount, diversity_order)
         allocation_ret, value_counts_ret, return_stats_ret, port_performance_ret = await max_efficient_return(symbols, avg_returns, cov_mat, feature, investment_amount, diversity_order, max_return_threshold)
         allocation_risk, value_counts_risk, return_stats_risk, port_performance_risk = await max_efficient_risk(symbols, avg_returns, cov_mat, feature, investment_amount, diversity_order, max_risk_threshold)
->>>>>>> Stashed changes:dynamic-portfolio-rebalancing/diverse-portfolio-generation.py
 
         output_dict[feature_list[index]][1].extend([allocation_sh, value_counts_sh, return_stats_sh, port_performance_sh])
         output_dict[feature_list[index]][2].extend([allocation_ret, value_counts_ret, return_stats_ret, port_performance_ret])
@@ -314,8 +295,6 @@ async def max_efficient_risk(symbols, avg_returns, cov_mat, feature, investment_
 
     return allocation, value_counts, stats_dict, portfolio_performance_dict
 
-<<<<<<< Updated upstream:dynamic_portfolio_rebalancing/diverse_portfolio_generation.py
-=======
 def convert_to_native(data):
     if isinstance(data, np.int32):
         return int(data)
@@ -517,4 +496,3 @@ async def get_trades(user_dict_old, user_dict_new):
 import asyncio
 
 asyncio.run(api_call(20000))
->>>>>>> Stashed changes:dynamic-portfolio-rebalancing/diverse-portfolio-generation.py
