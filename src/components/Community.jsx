@@ -10,8 +10,9 @@ import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import SwipeableViews from 'react-swipeable-views';
 import { autoPlay } from 'react-swipeable-views-utils';
 import './Community.css';
-const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
+import Navbar from "./Navbar.jsx";
 
+const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 const images = [
   {
     label: 'San Francisco – Oakland Bay Bridge, United States',
@@ -60,6 +61,9 @@ function Community() {
 
   return (
     <div>
+      <div style={{marginBottom: 20}}>
+      <Navbar />
+      </div>
     <h1 style={{fontSize: 100, marginTop: 90, fontWeight: 'bold', color: '#494949'}}>The power of community</h1>
     <h1 style={{fontSize: 50, marginTop: 80, color: '#494949'}}>Educational Content</h1>
     <Box sx={{ width: '80%', padding: '5%', margin: 'auto' }}>

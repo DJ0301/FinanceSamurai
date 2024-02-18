@@ -8,18 +8,21 @@ import Profile from "./components/Profile";
 import Community from "./components/Community";
 import BasicTable from "./components/Table";
 import { ApexChart } from "./components/Chart";
+import './App.css';
+
 function App() {
   return (
     <div>
-      {/* <Navbar />
       <Home />
-      <About/>
-      <Work/>
-      <Profile/>
-      <Contact />
-      <ImgMediaCard/> */}
+      {/* <About/> */}
+      {/* <Work/> */}
+      {/* <Profile/> */}
+      {/* <Contact /> */}
+      {/*<ImgMediaCard/> */}
       {/* <Community /> */}
-      <ApexChart />
+      {/* <div className="chart-container">
+      <ApexChart / >
+      </div> */}
       {/* <BasicTable /> */}
       {/* <StockFetcher /> */}
       {/* <StockDataComponent /> */}

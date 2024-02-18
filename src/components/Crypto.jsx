@@ -70,7 +70,7 @@ export const ApexChart = () => {
         setImages(data.map(item => ({
           title: item.Title,
           URL: item.Url,
-          image: item.Img_url,
+          image: 'https://images.unsplash.com/photo-1537944434965-cf4679d1a598?auto=format&fit=crop&w=400&h=250&q=60'
         })));
       } catch (error) {
         console.error('Error fetching stock data: ', error);
@@ -100,9 +100,10 @@ export const ApexChart = () => {
   };
   return (
     <div>
-      <Navbar />
+        <Navbar />
+    <div style={{ marginTop: '60px' }}> {/* Apply margin-top: 60px */}
       <div id="chart">
-        <ReactApexChart options={options} series={series} type="candlestick" height={350}/>
+        <ReactApexChart options={options} series={series} type="candlestick" height={350} />
       </div>
       <div id="html-dist"></div>
       <div>
@@ -142,7 +143,7 @@ export const ApexChart = () => {
                       overflow: 'hidden',
                       width: '100%',
                     }}
-                    src={step.image.toString()}
+                    src={step.image}
                     alt={step.URL}
                   />
                 ) : null}
@@ -180,6 +181,7 @@ export const ApexChart = () => {
           />
         </Box>
       </div>
+    </div>
     </div>
   );
 };

@@ -1,7 +1,12 @@
 import React from 'react';
 import './Home.css';
+import Navbar from "./Navbar.jsx";
+
 const Home = () => {
+  
   return (
+    <div>
+      <Navbar />
     <div name='home' className='w-full h-screen bg-[#0a192f]'>
       {/* Container */}
       <div className='max-w-[1000px] mx-auto px-8 flex flex-col justify-center h-full'>
@@ -18,6 +23,7 @@ const Home = () => {
         With Finance+ , you can easily enhance your portfolio, view stock market data and cryptocurrencies, and get the latest news on the stock market.
         </p>
       </div>
+    </div>
     </div>
   );
 };

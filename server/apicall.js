@@ -40,7 +40,7 @@ async function fetchStockData(symbol, interval, range) {
   };
 
   const headers = {
-    "X-RapidAPI-Key": "3b5b13d5f3msh7d170972d3d1771p1459d9jsn5420a861497d",
+    "X-RapidAPI-Key": "0246fdd8b7mshb7de1e17ea51299p15988ejsn25787ec5a46e",
     "X-RapidAPI-Host": "apidojo-yahoo-finance-v1.p.rapidapi.com"
   };
 
