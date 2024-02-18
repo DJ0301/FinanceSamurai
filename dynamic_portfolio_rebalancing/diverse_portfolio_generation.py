@@ -23,7 +23,7 @@ from vectorbt.portfolio.enums import SizeType, Direction
 warnings.filterwarnings("ignore")
 pd.options.display.float_format = '{:.4f}'.format
 
-async def api_call(total_investment_amount, asset_allocation = {"stock":0.6,"crypto":0.1,"mf":0.3}, diversity_order = {"stock":10,"crypto":2,"mf":3}):
+def api_call(total_investment_amount, asset_allocation = {"stock":0.6,"crypto":0.1,"mf":0.3}, diversity_order = {"stock":10,"crypto":2,"mf":3}):
     crypto_symbols = ['BTC-USD', 'ETH-USD', 'USDT-USD', 'BNB-USD', 'SOL-USD', 'DOGE-USD', 'STETH-USD', 'XRP-USD']
 
     stock_symbols = [ 'JCI', 'TGT', 'CMCSA', 'CPB', 'MO', 'APA', 'MMC', 'JPM', # test data
@@ -33,7 +33,7 @@ async def api_call(total_investment_amount, asset_allocation = {"stock":0.6,"cry
     mutual_funds_symbols = ['ENPIX', 'ENPSX', 'BIPSX', 'WWNPX', 'KNPCX', 'CSVIX', 'CYPSX', 'ACWIX', 'TIQIX', 'TROCX']
     
     investment_stocks = total_investment_amount * asset_allocation["stock"]
-    investment_crypto = total_investment_amount * asset_allocation["crpyto"]
+    investment_crypto = total_investment_amount * asset_allocation["crypto"]
     investment_mf = total_investment_amount * asset_allocation["mf"]
 
     stock_dict = get_diverse_portfolio(symbols=stock_symbols, investment_amount=investment_stocks, diversity_order=diversity_order["stock"])
@@ -72,9 +72,9 @@ def get_diverse_portfolio(symbols, investment_amount, max_risk_threshold = 1.0, 
         avg_returns = expected_returns.mean_historical_return(feature, frequency=int(year_freq))
         cov_mat = risk_models.sample_cov(feature, frequency=int(year_freq))
 
-        allocation_sh, value_counts_sh, return_stats_sh, port_performance_sh = max_sharpe_score(symbols, avg_returns, cov_mat, feature, investment_amount, diversity_order)
-        allocation_ret, value_counts_ret, return_stats_ret, port_performance_ret = max_efficient_return(symbols, avg_returns, cov_mat, feature, investment_amount, diversity_order, max_return_threshold)
-        allocation_risk, value_counts_risk, return_stats_risk, port_performance_risk = max_efficient_risk(symbols, avg_returns, cov_mat, feature, investment_amount, diversity_order, max_risk_threshold)
+        allocation_sh, value_counts_sh, return_stats_sh, port_performance_sh =  max_sharpe_score(symbols, avg_returns, cov_mat, feature, investment_amount, diversity_order)
+        allocation_ret, value_counts_ret, return_stats_ret, port_performance_ret =  max_efficient_return(symbols, avg_returns, cov_mat, feature, investment_amount, diversity_order, max_return_threshold)
+        allocation_risk, value_counts_risk, return_stats_risk, port_performance_risk =  max_efficient_risk(symbols, avg_returns, cov_mat, feature, investment_amount, diversity_order, max_risk_threshold)
 
         output_dict[feature_list[index]][1].extend([allocation_sh, value_counts_sh, return_stats_sh, port_performance_sh])
         output_dict[feature_list[index]][2].extend([allocation_ret, value_counts_ret, return_stats_ret, port_performance_ret])
@@ -266,4 +266,3 @@ def max_efficient_risk(symbols, avg_returns, cov_mat, feature, investment_amount
         
     return allocation, value_counts, stats_dict, portfolio_performance_dict
 
-api_call(total_investment_amount=20000)

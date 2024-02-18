@@ -1,10 +1,11 @@
 from fastapi import FastAPI, Body
 from pydantic import BaseModel
-from schemas.api_class import (stock,article, balancing)
+from schemas.api_class import (stock,article,balancing)
 from fastapi import FastAPI, Request, Form, status, Body, Response, BackgroundTasks
 from fastapi.responses import JSONResponse
 from newsfeed.get_articles import (get_art, get_stock, get_art_sentiment)
-# from ,,, import daksh_fn as get_balancing
+from dynamic_portfolio_rebalancing.diverse_portfolio_generation import api_call as get_balancing
+
 app = FastAPI()
 
 
@@ -25,7 +26,7 @@ async def articles(body: article):
     return output
 
 
-# @app.post("/balancing")
-# async def balancing(body: balancing):
-#     output = await get_balancing(body.asset_allocation, body.diversity_order, body.investment_amount)
-#     return output
+@app.post("/balancing")
+async def balancing(body: balancing):
+    output = get_balancing(total_investment_amount=body.amount)
+    return output

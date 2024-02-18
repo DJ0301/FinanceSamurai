@@ -11,6 +11,4 @@ class article(BaseModel):
 
 
 class balancing(BaseModel):
-    asset_allocation = Dict
-    diversity_order = Dict
-    investment_amount = int
+    amount: int
