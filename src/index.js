@@ -27,6 +27,7 @@ ReactDOM.render(
           <Route path='/community' element={<Community />} />
           <Route path='/crypto' element={<Crypto />} />
           <Route path='/About' element={<About />} />
+          <Route path='/home' element={<Home />} />
         </Routes>
       </Router>
     </Auth0Provider>

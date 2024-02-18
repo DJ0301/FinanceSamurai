@@ -18,7 +18,7 @@ const Navbar = () => {
       {/* menu */}
       <ul className='hidden md:flex'>
         <li>
-          <NavLink to='' activeClassName='active' smooth={true} duration={500}>
+          <NavLink to='/home' activeClassName='active' smooth={true} duration={500}>
             Home
           </NavLink>
         </li>
