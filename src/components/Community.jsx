@@ -15,31 +15,26 @@ import Navbar from "./Navbar.jsx";
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 const images = [
   {
-    label: 'San Francisco – Oakland Bay Bridge, United States',
+    label: 'Navigating the Markets: A Comprehensive Guide to Trading',
     imgPath:
-      'https://images.unsplash.com/photo-1537944434965-cf4679d1a598?auto=format&fit=crop&w=400&h=250&q=60',
+      'https://miro.medium.com/v2/resize:fit:1144/format:webp/1*Eeyu27Ulkg3ywJx8N_UcTA.jpeg',
     content: 'San Francisco – Oakland Bay Bridge, United States',
+    url: 'https://medium.com/@kapilcool/navigating-the-markets-a-comprehensive-guide-to-trading-9e142990de4c'
   },
   {
-    label: 'Bird',
+    label: 'Mastering the Bull Call Spread Strategy: A Deeper Dive',
     imgPath:
-      'https://images.unsplash.com/photo-1538032746644-0212e812a9e7?auto=format&fit=crop&w=400&h=250&q=60',
+      'https://miro.medium.com/v2/resize:fit:1400/format:webp/0*5zzY0cAF43LMwrBl',
       content: 'San Franciand Bay Bridge, United States',
+      url: 'https://medium.com/@laabhumsocial/mastering-the-bull-call-spread-strategy-a-deeper-dive-cd15efc60b20'
   },
   {
-    label: 'Bali, Indonesia',
+    label: 'The Martingale Strategy: Is It Really 100% Profitable?',
     imgPath:
-      'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=400&h=250',
+      'https://miro.medium.com/v2/resize:fit:1400/format:webp/1*cv2GEpxraujdgCf0icbSBA.png',
       content: 'San FranOakland Bay Bridge, United States',
-
-  },
-  {
-    label: 'Goč, Serbia',
-    imgPath:
-      'https://images.unsplash.com/photo-1512341689857-198e7e2f3ca8?auto=format&fit=crop&w=400&h=250&q=60',
-      content: 'Say Bridge, United States',
-
-  },
+      url: 'https://medium.com/@keenpeachy119/the-martingale-strategy-is-it-really-100-profitable-ed64c4055a9a'
+  }
 ];
 
 function Community() {
@@ -81,7 +76,7 @@ function Community() {
           bgcolor: '#0c0c0c',
         }}
       >
-        <Typography style={{color: 'dodgerblue', fontSize: 25}}>{images[activeStep].content}</Typography>
+        <Typography style={{color: 'dodgerblue', fontSize: 25}}>{images[activeStep].label}</Typography>
       </Paper>
       <AutoPlaySwipeableViews
         axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
@@ -90,7 +85,7 @@ function Community() {
         enableMouseEvents
       >
         {images.map((step, index) => (
-          <div key={step.content}>
+          <div key={step.label}>
             {Math.abs(activeStep - index) <= 2 ? (
               <Box
                 component="img"
@@ -102,7 +97,7 @@ function Community() {
                   width: '100%',
                 }}
                 src={step.imgPath}
-                alt={step.content}
+                alt={step.label}
               />
             ) : null}
           </div>
@@ -215,3 +210,5 @@ function Community() {
 }
 
 export default Community;
+
+

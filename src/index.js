@@ -10,6 +10,8 @@ import Community from './components/Community';
 import BasicTable from './components/Table';
 import Crypto from './components/Crypto';
 import About from './components/About';
+import Work from './components/Work';
+import Rebalance from './components/prebalance';
 ReactDOM.render(
   <React.StrictMode>
     <Auth0Provider
@@ -28,6 +30,9 @@ ReactDOM.render(
           <Route path='/crypto' element={<Crypto />} />
           <Route path='/About' element={<About />} />
           <Route path='/home' element={<Home />} />
+          <Route path='*' element={<Home />} />
+          <Route path='/work' element={<Work />} />
+          <Route path='/rebalance' element={<Rebalance />} />
         </Routes>
       </Router>
     </Auth0Provider>

@@ -17,6 +17,62 @@ import Navbar from "./Navbar.jsx";
 
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 
+const stocks = [
+  'AAPL',
+  'HDFCBANK.BO',
+  'RELIANCE.BO',
+  'TCS.BO',
+  'INFY.BO',
+  'TSLA',
+  'ICICIBANK.BO',
+  'KOTAKBANK.BO',
+  'BHARTIARTL.BO',
+  'AXISBANK.BO',
+  'LT.BO',
+  'SBIN.BO',
+  'MARUTI.BO',
+  'NVDA',
+  'HUL.BO',
+  'INDUSINDBK.BO',
+  'HDFC.BO',
+  'BAJFINANCE.BO',
+  'WIPRO.BO',
+  'ASIANPAINT.BO',
+  'TECHM.BO',
+  'NESTLEIND.BO',
+  'BAJAJFINSV.BO',
+  'BAJAJ-AUTO.BO',
+  'TITAN.BO',
+  'UPL.BO',
+  'SHREECEM.BO',
+  'DIVISLAB.BO',
+  'HDFCBANK.NS',
+  'RELIANCE.NS',
+  'TCS.NS',
+  'INFY.NS',
+  'ICICIBANK.NS',
+  'KOTAKBANK.NS',
+  'BHARTIARTL.NS',
+  'AXISBANK.NS',
+  'LT.NS',
+  'SBIN.NS',
+  'MARUTI.NS',
+  'HUL.NS',
+  'INDUSINDBK.NS',
+  'HDFC.NS',
+  'BAJFINANCE.NS',
+  'WIPRO.NS',
+  'ASIANPAINT.NS',
+  'TECHM.NS',
+  'NESTLEIND.NS',
+  'BAJAJFINSV.NS',
+  'BAJAJ-AUTO.NS',
+  'TITAN.NS',
+  'UPL.NS',
+  'SHREECEM.NS',
+  'DIVISLAB.NS',
+];
+
 export const ApexChart = () => {
   const [series, setSeries] = useState([]);
   const [symbol, setSymbol] = useState('AAPL');
@@ -24,7 +80,6 @@ export const ApexChart = () => {
   const [range, setRange] = useState('1mo');
   const theme = useTheme();
   const [activeStep, setActiveStep] = React.useState(0);
-
   const [images, setImages] = useState([]);
 
   const handleNext = () => {
@@ -55,6 +110,7 @@ export const ApexChart = () => {
           }))
         }];
         setSeries(newSeries);
+        NewsComponent(symbol);
       } catch (error) {
         console.error('Error fetching stock data: ', error);
       }
@@ -98,9 +154,39 @@ export const ApexChart = () => {
       },
     },
   };
+
   return (
     <div>
       <Navbar />
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
+          <div style={{ marginRight: 20 }}>
+            <label htmlFor="symbol">Symbol:</label>
+            <select id="symbol" value={symbol} onChange={(e) => setSymbol(e.target.value)}>
+              {/* Map through the 'stocks' array and render options dynamically */}
+              {stocks.map((stock, index) => (
+                <option key={index} value={stock}>{stock}</option>
+              ))}
+            </select>
+          </div>
+          <div style={{ marginRight: 20 }}>
+            <label htmlFor="interval">Interval:</label>
+            <select id="interval" value={interval} onChange={(e) => setInterval(e.target.value)}>
+              <option value="1d">1d</option>
+              <option value="1wk">1wk</option>
+              <option value="1mo">1mo</option>
+              {/* Add more options as needed */}
+            </select>
+          </div>
+          <div>
+            <label htmlFor="range">Range:</label>
+            <select id="range" value={range} onChange={(e) => setRange(e.target.value)}>
+              <option value="1mo">1mo</option>
+              <option value="3mo">3mo</option>
+              <option value="6mo">6mo</option>
+              {/* Add more options as needed */}
+            </select>
+          </div>
+        </div>
       <div id="chart">
         <ReactApexChart options={options} series={series} type="candlestick" height={350}/>
       </div>
@@ -182,6 +268,6 @@ export const ApexChart = () => {
       </div>
     </div>
   );
-};
+}
 
 export default ApexChart;

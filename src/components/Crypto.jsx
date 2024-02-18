@@ -17,14 +17,25 @@ import Navbar from "./Navbar.jsx";
 
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 
-export const ApexChart = () => {
+const cryptodata = [
+    "BTC-USD",
+    "ETH-USD",
+    "USDT-USD",
+    "BNB-USD",
+    "SOL-USD",
+    "DOGE-USD",
+    "STETH-USD",
+    "XRP-USD"
+];
+
+
+export const Crypto = () => {
   const [series, setSeries] = useState([]);
   const [symbol, setSymbol] = useState('AAPL');
   const [interval, setInterval] = useState('1d');
   const [range, setRange] = useState('1mo');
   const theme = useTheme();
   const [activeStep, setActiveStep] = React.useState(0);
-
   const [images, setImages] = useState([]);
 
   const handleNext = () => {
@@ -55,6 +66,7 @@ export const ApexChart = () => {
           }))
         }];
         setSeries(newSeries);
+        NewsComponent(symbol);
       } catch (error) {
         console.error('Error fetching stock data: ', error);
       }
@@ -70,7 +82,7 @@ export const ApexChart = () => {
         setImages(data.map(item => ({
           title: item.Title,
           URL: item.Url,
-          image: 'https://images.unsplash.com/photo-1537944434965-cf4679d1a598?auto=format&fit=crop&w=400&h=250&q=60'
+          image: item.Img_url,
         })));
       } catch (error) {
         console.error('Error fetching stock data: ', error);
@@ -98,92 +110,45 @@ export const ApexChart = () => {
       },
     },
   };
+
   return (
     <div>
-        <Navbar />
-    <div style={{ marginTop: '60px' }}> {/* Apply margin-top: 60px */}
+      <Navbar />
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
+          <div style={{ marginRight: 20 }}>
+            <label htmlFor="symbol">Symbol:</label>
+            <select id="symbol" value={symbol} onChange={(e) => setSymbol(e.target.value)}>
+              {/* Map through the 'stocks' array and render options dynamically */}
+              {cryptodata.map((stock, index) => (
+                <option key={index} value={stock}>{stock}</option>
+              ))}
+            </select>
+          </div>
+          <div style={{ marginRight: 20 }}>
+            <label htmlFor="interval">Interval:</label>
+            <select id="interval" value={interval} onChange={(e) => setInterval(e.target.value)}>
+              <option value="1d">1d</option>
+              <option value="1wk">1wk</option>
+              <option value="1mo">1mo</option>
+              {/* Add more options as needed */}
+            </select>
+          </div>
+          <div>
+            <label htmlFor="range">Range:</label>
+            <select id="range" value={range} onChange={(e) => setRange(e.target.value)}>
+              <option value="1mo">1mo</option>
+              <option value="3mo">3mo</option>
+              <option value="6mo">6mo</option>
+              {/* Add more options as needed */}
+            </select>
+          </div>
+        </div>
       <div id="chart">
-        <ReactApexChart options={options} series={series} type="candlestick" height={350} />
+        <ReactApexChart options={options} series={series} type="candlestick" height={350}/>
       </div>
       <div id="html-dist"></div>
-      <div>
-        <h1 style={{fontSize: 50, marginTop: 80, color: '#494949'}}>Relevant News</h1>
-        <Box sx={{ width: '80%', padding: '5%', margin: 'auto' }}>
-          <Paper
-            square
-            elevation={0}
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              height: 80,
-              borderTopLeftRadius: 10,
-              borderTopRightRadius: 10,
-              color: '#fff',
-              pl: 2,
-              bgcolor: '#0c0c0c',
-            }}
-          >
-            <Typography style={{color: 'dodgerblue', fontSize: 25}}>{images[activeStep]?.title}</Typography>
-          </Paper>
-          <AutoPlaySwipeableViews
-            axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
-            index={activeStep}
-            onChangeIndex={handleStepChange}
-            enableMouseEvents
-          >
-            {images.map((step, index) => (
-              <div key={step.title}>
-                {Math.abs(activeStep - index) <= 2 ? (
-                  <Box
-                    component="img"
-                    sx={{
-                      height: 500,
-                      fontSize: 40,
-                      display: 'block',
-                      overflow: 'hidden',
-                      width: '100%',
-                    }}
-                    src={step.image}
-                    alt={step.URL}
-                  />
-                ) : null}
-              </div>
-            ))}
-          </AutoPlaySwipeableViews>
-          <MobileStepper style={{backgroundColor: '#011222', borderBottomLeftRadius: 10, borderBottomRightRadius: 10}}
-            steps={images.length}
-            position="static"
-            activeStep={activeStep}
-            nextButton={
-              <Button
-                size="small"
-                onClick={handleNext}
-                disabled={activeStep === images.length - 1}
-              >
-                Next
-                {theme.direction === 'rtl' ? (
-                  <KeyboardArrowLeft />
-                ) : (
-                  <KeyboardArrowRight />
-                )}
-              </Button>
-            }
-            backButton={
-              <Button size="small" onClick={handleBack} disabled={activeStep === 0}>
-                {theme.direction === 'rtl' ? (
-                  <KeyboardArrowRight />
-                ) : (
-                  <KeyboardArrowLeft />
-                )}
-                Back
-              </Button>
-            }
-          />
-        </Box>
-      </div>
-    </div>
     </div>
   );
-};
+}
 
-export default ApexChart;
+export default Crypto;

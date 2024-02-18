@@ -9,10 +9,10 @@ const Navbar = () => {
   const { loginWithRedirect, isAuthenticated, user, logout } = useAuth0();
 
   return (
-    <div className=' w-full h-[200px] flex justify-between items-center px-4 bg-[#000000] text-gray-300'>
+    <div className=' w-full h-[100px] flex justify-between items-center px-4 bg-[#000000] text-gray-300'>
       <div>
         <a className="navbar-brand" href="#">
-          <img src={Logo} alt='Logo Image' style={{ height: '130px'}} />
+          <img src={Logo} alt='Logo Image' style={{ height: '60px'}} />
         </a>
       </div>
       {/* menu */}
@@ -37,9 +37,18 @@ const Navbar = () => {
             Cryptocurrencies
           </NavLink>
         </li>
+        <li>
+          <NavLink to='/work' activeClassName='active' smooth={true} duration={500}>
+          Reviews
+          </NavLink>
+        </li>
+        
         {isAuthenticated && (
           <li>
+          <NavLink to='/portfolio' activeClassName='active' smooth={true} duration={500}>
             <p> {user.name}'s portfolio </p>
+            </NavLink>
+
           </li>
         )}
         {isAuthenticated ? (
