@@ -23,13 +23,14 @@ async def get_art(symbol):
     for i in range(10):
         #title
         title = text['data']['main']['stream'][i]['content']['title']
+        img = text['data']['main']['stream'][i]['content']['thumbnail']['resolutions'][0]['url']
         # article
         # print(text['data']['main']['stream'][i]['content']['clickThroughUrl']['url'])
         if text['data']['main']['stream'][i]['content']['clickThroughUrl'] is None:
             link = text['data']['main']['stream'][i]['content']['previewUrl']
         else:
             link = text['data']['main']['stream'][i]['content']['clickThroughUrl']['url']
-        output.append({"Title": title, "Url": link})
+        output.append({"Title": title, "Img_url":img, "Url": link})
 
     return output
 

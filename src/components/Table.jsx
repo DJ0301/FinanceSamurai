@@ -1,3 +1,7 @@
+
+
+import Button from '@mui/material/Button';
+import Stack from '@mui/material/Stack'
 import * as React from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -43,13 +47,14 @@ export default function BasicTable() {
 
   return (
     <div>
-      <PieChart
+    <div style={{display: 'flex', marginTop: 50, marginLeft: 40, marginRight: 80, justifyContent: 'space-between',alignItems: 'center', minHeight: 350, minWidth: 180}}>
+      <PieChart 
         series={[{ data: pieChartData }]}
-        width={400}
-        height={200}
+        width={1000}
+        height={800}
       />
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+      <TableContainer style={{}} component={Paper}>
+        <Table sx={{  minHeight: 500, minWidth: 400 }} aria-label="simple table">
           <TableHead>
             <TableRow>
               <TableCell>Asset </TableCell>
@@ -60,7 +65,7 @@ export default function BasicTable() {
               <TableCell align="right">Weight of Asset</TableCell>
             </TableRow>
           </TableHead>
-          <TableBody>
+          <TableBody style={{ minHeight: 700, minWidth: 300 }}>
             {rows.map((row) => (
               <TableRow
                 key={row.name}
@@ -77,6 +82,11 @@ export default function BasicTable() {
           </TableBody>
         </Table>
       </TableContainer>
+      <div style={{ marginLeft: 'auto', justifyContent: 'flex-end', marginTop: 700, marginRight: 50}}>
+      <Button variant="outlined" size='large'>Primary</Button>
+      </div>
+    </div>
+
     </div>
   );
 }
